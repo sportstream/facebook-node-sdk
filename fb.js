@@ -1,11 +1,11 @@
 (function() {
-    
+
     var FB = (function() {
-    
+
         var   request = require('request')
             , crypto  = require('crypto')
             , version = require(require('path').resolve(__dirname, 'package.json')).version
-            , api 
+            , api
             , graph
             , rest
             , oauthRequest
@@ -98,7 +98,7 @@
          * @param cb {Function} the callback function to handle the response
          */
         api = function() {
-            // 
+            //
             // FB.api('/platform', function(response) {
             //  console.log(response.company_overview);
             // });
@@ -289,11 +289,21 @@
                     return cb({error:error});
                 }
 
-                if(isOAuthRequest && response && response.statusCode === 200 &&
-                    response.headers && /.*text\/plain.*/.test(response.headers['content-type'])) {
-                    cb(parseOAuthApiResponse(body));
-                } else {
+                if (isOAuthRequest && response && response.statusCode === 200 &&
+                    response.headers && /.*text\/plain.*/.test(response.headers['content-type']))
+                {
+                  cb(parseOAuthApiResponse(body));
+                }
+                else
+                {
+                  try
+                  {
                     cb(JSON.parse(body));
+                  }
+                  catch (ex)
+                  {
+                    cb({error:ex});
+                  }
                 }
             });
         };
@@ -362,7 +372,7 @@
                 , hmac
                 , base64Digest
                 , base64UrlDigest;
-            
+
             if(!signedRequest) {
                 return;
             }
@@ -403,7 +413,7 @@
 
             // Replace illegal characters
             base64UrlDigest = base64UrlDigest.replace(/\+/g, '-').replace(/\//g, '_');
-            
+
             if(base64UrlDigest !== encodedSignature) {
                 return;
             }
