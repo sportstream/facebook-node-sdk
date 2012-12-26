@@ -292,18 +292,22 @@
                 if (isOAuthRequest && response && response.statusCode === 200 &&
                     response.headers && /.*text\/plain.*/.test(response.headers['content-type']))
                 {
-                  cb(parseOAuthApiResponse(body));
+                  return cb(parseOAuthApiResponse(body));
                 }
                 else
                 {
+                  var json;
+
                   try
                   {
-                    cb(JSON.parse(body));
+                    json = JSON.parse(body);
                   }
                   catch (ex)
                   {
-                    cb({error:ex});
+                    return cb({error:ex});
                   }
+
+                  return cb(json);
                 }
             });
         };
